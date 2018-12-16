@@ -18,7 +18,7 @@ type //Extra Goodie (TNaturalColorHTMLHex and mapping function)
 type
   TColorRec = record
   {private}
-  public
+  private
     FRed: Byte;
     FGreen: Byte;
     FBlue: Byte;
@@ -38,17 +38,19 @@ type
     procedure SetCyan(const Value: Integer);
     procedure SetMagenta(const Value: Integer);
     procedure SetYellow(const Value: Integer);
-    //My Extra for Hex manipulation
-    function GetHTMLHexWithoutHash: String;
+  public
+    class operator implicit(Value: TColorRec): TColor;
+    class operator implicit(Value: TColor): TColorRec;
+
     function GetDelphiHexWithoutDollar: String;
-    procedure SetHTMLHexWithoutHashInput(const ValueHTMLHex: String);
     procedure SetDelphiHexWithoutDollarInput(const ValueDelphiHex: String);
     procedure SetHTMLHexWithDollar(const ValueHTMLHex: Integer);
     procedure SetDelphiHexWithDollar(const ValueDelphiHex: Integer);
+    //My Extra for Hex manipulation
+    function GetHTMLHexWithoutHash: String;
+    procedure SetHTMLHexWithoutHashInput(const ValueHTMLHex: String);
     procedure SetColorFromNaturalString(const col: string);   //Extra Goodie
-//  public
-    class operator implicit(Value: TColorRec): TColor;
-    class operator implicit(Value: TColor): TColorRec;
+
     property Red: Byte read FRed write FRed;
     property Green: Byte read FGreen write FGreen;
     property Blue: Byte read FBlue write FBlue;
@@ -59,6 +61,7 @@ type
     property Magenta: Integer read GetMagenta write SetMagenta;
     property Yellow: Integer read GetYellow write SetYellow;
     property Black: Integer read GetBlack write SetBlack;
+    property HueDegrees: Double read GetHueDegrees write SetHueDegrees;
   end;
 
 
@@ -69,18 +72,19 @@ implementation
 //My Extra for Hex manipulation
 function ConvertHtmlHexToTColor(Color: String):TColor ;
 var
-    rColor : TColor;
+  rColor : TColor;
 begin
 //    Color := CheckHexForHash(Color);    Not required if you don't want the # infront of the string
 
-    if (length(color) = 6) then
-    begin
-        {remember that TColor is bgr not rgb: so you need to switch then around}
-        color := '$00' + copy(color,5,2) + copy(color,3,2) + copy(color,1,2);
-        rColor := StrToInt(color);
-    end;
+  rColor := 0;
+  if (length(color) = 6) then
+  begin
+    {remember that TColor is bgr not rgb: so you need to switch then around}
+    color := '$00' + copy(color,5,2) + copy(color,3,2) + copy(color,1,2);
+    rColor := StrToInt(color);
+  end;
 
-    result := rColor;
+  result := rColor;
 end;
 
 //My Extra for Hex manipulation
@@ -174,46 +178,46 @@ procedure TColorRec.SetColorFromNaturalString(const col: string);
 var
    colHTMLHex : TNaturalColorHTMLHex;
 begin
-    if col = 'white' then colHTMLHex := TNaturalColorHTMLHex.white
-    else if col = 'silver' then colHTMLHex := TNaturalColorHTMLHex.silver
-    else if col = 'gray' then colHTMLHex := TNaturalColorHTMLHex.gray
-    else if col = 'black' then colHTMLHex := TNaturalColorHTMLHex.black
-    else if col = 'navy' then colHTMLHex := TNaturalColorHTMLHex.navy
-    else if col = 'blue' then colHTMLHex := TNaturalColorHTMLHex.blue
-    else if col = 'cerulean' then colHTMLHex :=TNaturalColorHTMLHex.cerulean
-    else if col = 'skyblue' then colHTMLHex :=  TNaturalColorHTMLHex.skyblue
-    else if col = 'turquoise' then colHTMLHex :=  TNaturalColorHTMLHex.turquoise
-    else if col = 'bluegreen' then colHTMLHex := TNaturalColorHTMLHex.bluegreen
-    else if col = 'azure' then colHTMLHex :=  TNaturalColorHTMLHex.azure
-    else if col = 'teal' then colHTMLHex := TNaturalColorHTMLHex.teal
-    else if col = 'cyan' then colHTMLHex := TNaturalColorHTMLHex.cyan
-    else if col = 'green' then colHTMLHex := TNaturalColorHTMLHex.green
-    else if col = 'lime' then colHTMLHex := TNaturalColorHTMLHex.lime
-    else if col = 'chartreuse' then colHTMLHex := TNaturalColorHTMLHex.chartreuse
-    else if col = 'olive' then colHTMLHex :=  TNaturalColorHTMLHex.olive
-    else if col = 'yellow' then colHTMLHex := TNaturalColorHTMLHex. yellow
-    else if col = 'gold' then colHTMLHex := TNaturalColorHTMLHex.gold
-    else if col = 'amber' then colHTMLHex :=  TNaturalColorHTMLHex.amber
-    else if col = 'orange' then colHTMLHex := TNaturalColorHTMLHex.orange
-    else if col = 'brown' then colHTMLHex :=  TNaturalColorHTMLHex.brown
-    else if col = 'orangered' then colHTMLHex := TNaturalColorHTMLHex.orangered
-    else if col = 'red' then colHTMLHex := TNaturalColorHTMLHex.red
-    else if col = 'maroon' then colHTMLHex := TNaturalColorHTMLHex.maroon
-    else if col = 'rose' then colHTMLHex := TNaturalColorHTMLHex.rose
-    else if col = 'redviolet' then colHTMLHex :=  TNaturalColorHTMLHex.redviolet
-    else if col = 'pink' then colHTMLHex := TNaturalColorHTMLHex.pink
-    else if col = 'magenta' then colHTMLHex :=TNaturalColorHTMLHex.magenta
-    else if col = 'blueviolet' then colHTMLHex := TNaturalColorHTMLHex.blueviolet
-    else if col = 'purple' then colHTMLHex := TNaturalColorHTMLHex.purple
-    else if col = 'indigo' then colHTMLHex := TNaturalColorHTMLHex.indigo
-    else if col = 'violet' then colHTMLHex := TNaturalColorHTMLHex.violet
-    else if col = 'peach' then colHTMLHex := TNaturalColorHTMLHex.peach
-    else if col = 'apricot' then colHTMLHex := TNaturalColorHTMLHex.apricot
-    else if col = 'ochre' then colHTMLHex := TNaturalColorHTMLHex.ochre
-    else if col = 'plum' then colHTMLHex := TNaturalColorHTMLHex.plum
-    else colHTMLHex := TNaturalColorHTMLHex.white;
+  if col = 'white' then colHTMLHex := TNaturalColorHTMLHex.white
+  else if col = 'silver' then colHTMLHex := TNaturalColorHTMLHex.silver
+  else if col = 'gray' then colHTMLHex := TNaturalColorHTMLHex.gray
+  else if col = 'black' then colHTMLHex := TNaturalColorHTMLHex.black
+  else if col = 'navy' then colHTMLHex := TNaturalColorHTMLHex.navy
+  else if col = 'blue' then colHTMLHex := TNaturalColorHTMLHex.blue
+  else if col = 'cerulean' then colHTMLHex :=TNaturalColorHTMLHex.cerulean
+  else if col = 'skyblue' then colHTMLHex :=  TNaturalColorHTMLHex.skyblue
+  else if col = 'turquoise' then colHTMLHex :=  TNaturalColorHTMLHex.turquoise
+  else if col = 'bluegreen' then colHTMLHex := TNaturalColorHTMLHex.bluegreen
+  else if col = 'azure' then colHTMLHex :=  TNaturalColorHTMLHex.azure
+  else if col = 'teal' then colHTMLHex := TNaturalColorHTMLHex.teal
+  else if col = 'cyan' then colHTMLHex := TNaturalColorHTMLHex.cyan
+  else if col = 'green' then colHTMLHex := TNaturalColorHTMLHex.green
+  else if col = 'lime' then colHTMLHex := TNaturalColorHTMLHex.lime
+  else if col = 'chartreuse' then colHTMLHex := TNaturalColorHTMLHex.chartreuse
+  else if col = 'olive' then colHTMLHex :=  TNaturalColorHTMLHex.olive
+  else if col = 'yellow' then colHTMLHex := TNaturalColorHTMLHex. yellow
+  else if col = 'gold' then colHTMLHex := TNaturalColorHTMLHex.gold
+  else if col = 'amber' then colHTMLHex :=  TNaturalColorHTMLHex.amber
+  else if col = 'orange' then colHTMLHex := TNaturalColorHTMLHex.orange
+  else if col = 'brown' then colHTMLHex :=  TNaturalColorHTMLHex.brown
+  else if col = 'orangered' then colHTMLHex := TNaturalColorHTMLHex.orangered
+  else if col = 'red' then colHTMLHex := TNaturalColorHTMLHex.red
+  else if col = 'maroon' then colHTMLHex := TNaturalColorHTMLHex.maroon
+  else if col = 'rose' then colHTMLHex := TNaturalColorHTMLHex.rose
+  else if col = 'redviolet' then colHTMLHex :=  TNaturalColorHTMLHex.redviolet
+  else if col = 'pink' then colHTMLHex := TNaturalColorHTMLHex.pink
+  else if col = 'magenta' then colHTMLHex :=TNaturalColorHTMLHex.magenta
+  else if col = 'blueviolet' then colHTMLHex := TNaturalColorHTMLHex.blueviolet
+  else if col = 'purple' then colHTMLHex := TNaturalColorHTMLHex.purple
+  else if col = 'indigo' then colHTMLHex := TNaturalColorHTMLHex.indigo
+  else if col = 'violet' then colHTMLHex := TNaturalColorHTMLHex.violet
+  else if col = 'peach' then colHTMLHex := TNaturalColorHTMLHex.peach
+  else if col = 'apricot' then colHTMLHex := TNaturalColorHTMLHex.apricot
+  else if col = 'ochre' then colHTMLHex := TNaturalColorHTMLHex.ochre
+  else if col = 'plum' then colHTMLHex := TNaturalColorHTMLHex.plum
+  else colHTMLHex := TNaturalColorHTMLHex.white;
 
-    Self.SetHTMLHexWithDollar(Ord(colHTMLHex));
+  Self.SetHTMLHexWithDollar(Ord(colHTMLHex));
 end;
 
 { TColorRec }
@@ -345,37 +349,34 @@ end;
 
 procedure TColorRec.SetDelphiHexWithoutDollarInput(const ValueDelphiHex: string);
 begin
-   //Delphi Hex to TColor
-   Self := StrToInt('$'+ValueDelphiHex);
+  //Delphi Hex to TColor
+  Self := StrToInt('$'+ValueDelphiHex);
 end;
 
 function TColorRec.GetDelphiHexWithoutDollar;
 begin
-   Result := '';
-   //internalRGB to TColor
-   //TColor to Delphi HEX
-   Result := '$'+IntToHex(RGB(FRed,FGreen,FBlue),6);
-   Result := StringReplace(Result,'$','',[rfReplaceAll]);
+  Result := '';
+  Result := Format('%.2x%.2x%.2x', [Red, Green, Blue]);
 end;
 
 procedure TColorRec.SetHTMLHexWithoutHashInput(const ValueHTMLHex: string);
 begin
   //HTMLHex to TColor
   //TColor set method (implicit)
-   Self := ConvertHtmlHexToTColor(ValueHTMLHex);
+  Self := ConvertHtmlHexToTColor(ValueHTMLHex);
 end;
 
 function TColorRec.GetHTMLHexWithoutHash;
 begin
-   Result := '';
-   Result := TColorToHTMLHex(RGB(FRed, FGreen, FBlue));
+  Result := '';
+  Result := TColorToHTMLHex(RGB(FRed, FGreen, FBlue));
 end;
 
 
 procedure TColorRec.SetDelphiHexWithDollar(const ValueDelphiHex: Integer);
 begin
     //Delphi Hex to TColor
-   Self := (ValueDelphiHex);
+  Self := (ValueDelphiHex);
 end;
 
 procedure TColorRec.SetHTMLHexWithDollar(const ValueHTMLHex: Integer);
@@ -387,51 +388,3 @@ begin
 end;
 end.
 
-
-{* Some use cases
-
-Natural String to color from editor based input (Goodie Part)
-
-
-**Trick to make tints of color**
-#Convert RGB to HSV and play with Value/Brightness(V field)
-#Back convert HSV to RGB.
-
-
-
-procedure TForm1.btnHexDemosViaRecordHelperClick(Sender: TObject);
-var
- col1 : TColorRec;
- myHTMLColor : TNaturalColorHTMLHex;
-begin
-    //Delphi to Hex
-    col1 := clNone;
-    edtHexDelphi.Text := col1.GetDelphiHexWithoutDollar;
-    shp2.Brush.Color := col1;
-    edtDelphiRGB.Text := IntToStr(col1.FRed) + ', '+IntToStr(col1.FGreen) + ', '+IntToStr(col1.FBlue);
-
-    //Delphi Hex to TColor
-    col1.SetDelphiHexWithoutDollarInput(edtHexDelphi.Text);
-    shp2.Brush.Color := col1;
-    edtDelphiRGB.Text := IntToStr(col1.FRed) + ', '+IntToStr(col1.FGreen) + ', '+IntToStr(col1.FBlue);
-
-    //Delphi Hex to HTML Hex
-    col1.SetDelphiHexWithoutDollarInput(edtHexDelphi.Text);
-    shp2.Brush.Color := col1;
-    edtHexHTML.Text := col1.GetHTMLHexWithoutHash;
-
-    //HTML Hex to TColor
-    col1.SetHTMLHexWithoutHashInput(edtHexHTML.Text);
-    shp2.Brush.Color := col1;
-
-
-    col1.SetHTMLHexWithDollar($FFD700);
-    myHTMLColor := TNaturalColorHTMLHex.green;
-    col1.SetHTMLHexWithDollar(Ord(myHTMLColor));
-
-    col1.SetColorFromNaturalString('orangered');
-    shp2.Brush.Color := col1;
-end;
-
-
-*}
